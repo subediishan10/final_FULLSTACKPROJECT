@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Login from "./Login";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 function Signup() {
   const {
     register,
@@ -11,8 +12,24 @@ function Signup() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    alert("Signup Successful!");
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    };
+
+    axios
+      .post("http://localhost:4000/user/signup", userInfo)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data) {
+          alert("Signup successful");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Error:" + err);
+      });
   };
 
   return (
