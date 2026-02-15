@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { X } from "lucide-react";
-
+import axios from "axios";
+import toast from "react-hot-toast";
 function Login() {
   const {
     register,
@@ -11,8 +12,27 @@ function Login() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    alert("Login Successful!");
+    const userInfo = {
+      email: data.email,
+      password: data.password,
+    };
+
+    axios
+      .post("http://localhost:4001/user/login", userInfo)
+      .then((res) => {
+        console.log(res.data.message);
+        if (res.data) {
+          toast.success("Logged in Successfully");
+        }
+        console.log(res.data.user);
+        localStorage.setItem("users", JSON.stringify(res.data.user));
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log(err);
+          toast.error(err.response.data.message);
+        }
+      });
   };
 
   return (

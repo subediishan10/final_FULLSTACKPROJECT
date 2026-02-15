@@ -19,16 +19,20 @@ function Signup() {
     };
 
     axios
-      .post("http://localhost:4000/user/signup", userInfo)
+      .post("http://localhost:4001/user/signup", userInfo)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data.message);
         if (res.data) {
-          alert("Signup successful");
+          toast.success("Signup successful");
         }
+        console.log(res.data.user);
+        localStorage.setItem("users", JSON.stringify(res.data.user));
       })
       .catch((err) => {
-        console.log(err);
-        alert("Error:" + err);
+        if (err.response) {
+          console.log(err);
+          toast.error(err.response.data.message);
+        }
       });
   };
 
@@ -58,12 +62,12 @@ function Signup() {
                   type="text"
                   placeholder="Enter your name"
                   className="w-80 px-3 py-2 outline-none rounded-md"
-                  {...register("name", { required: "Name is required" })}
+                  {...register("fullname", { required: "Name is required" })}
                 />
                 <br />
-                {errors.name && (
+                {errors.fullname && (
                   <span className="text-red-500 text-sm">
-                    {errors.name.message}
+                    {errors.fullname.message}
                   </span>
                 )}
               </div>
