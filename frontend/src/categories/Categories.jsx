@@ -1,18 +1,18 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import Category from "../components/Category";
 import Footer from "../components/Footer";
-import About from "../components/about";
 
-function Abouts() {
+function Categories() {
   return (
     <>
       <div>
         <Navbar />
-        <About />
+        <Category />
         <Footer />
       </div>
     </>
   );
 }
 
-export default Abouts;
+export default Categories;

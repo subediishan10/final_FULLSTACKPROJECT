@@ -8,6 +8,8 @@ import Contacts from "./contacts/Contacts";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./context/AuthProvider";
 import Abouts from "./abouts/Abouts";
+import Categories from "./categories/Categories";
+import Carts from "./carts/carts";
 function App() {
   const [authUser, setAuthUser] = useAuth();
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/contact" element={<Contacts />} />
         <Route path="/about" element={<Abouts />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/cart" element={<Carts />} />
       </Routes>
       <Toaster />
     </>
