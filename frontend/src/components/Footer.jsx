@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Freebook from "./Freebook";
+import FooterSkeleton from "../skeleton/FooterSkeleton";
 
 function Footer() {
-  return (
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000); // 3 sec
+    return () => clearTimeout(timer);
+  }, []);
+
+  return loading ? (
+    <FooterSkeleton />
+  ) : (
     <div>
       <footer className="footer footer-horizontal footer-center text-base-content rounded p-10">
         <nav className="grid grid-flow-col gap-4">
