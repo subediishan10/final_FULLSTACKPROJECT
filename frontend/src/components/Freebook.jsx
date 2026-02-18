@@ -19,7 +19,6 @@ function Freebook() {
           (data) => data.category === "Free",
         );
         setBook(filteredData);
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -61,10 +60,19 @@ function Freebook() {
       },
     ],
   };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
 
-  return loading ? (
-    <FreebookSkeleton />
-  ) : (
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <FreebookSkeleton />;
+  }
+
+  return (
     <div className="max-w-screen-2xl container mx-auto md:px-20 px-4 mt-15 ">
       <div>
         <h1 className="font-semibold text-xl pb-2">Free Offered Courses </h1>

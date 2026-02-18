@@ -6,6 +6,7 @@ import NavbarSkeleton from "../skeleton/Navbarskeleton";
 function Navbar() {
   const [authUser, setAuthUser] = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [loading, setLoading] = useState(true);
   //Dark mode logic
   useEffect(() => {
     if (theme === "dark") {
@@ -55,7 +56,6 @@ function Navbar() {
     </>
   );
 
-  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);

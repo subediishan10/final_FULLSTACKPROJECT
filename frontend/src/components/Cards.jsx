@@ -18,7 +18,7 @@ function Cards({ item }) {
             <div className="card-actions flex  justify-between items-center ">
               <div className="badge badge-outline">${item.price}</div>
               <div className="cursor-pointer px-2 py-1 border rounded-full hover:bg-pink-500 hover:text-white duration-200 ">
-                Buy now
+                Add to cart
               </div>
             </div>
           </div>

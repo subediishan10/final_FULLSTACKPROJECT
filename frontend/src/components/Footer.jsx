@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Freebook from "./Freebook";
 import FooterSkeleton from "../skeleton/FooterSkeleton";
 
 function Footer() {
