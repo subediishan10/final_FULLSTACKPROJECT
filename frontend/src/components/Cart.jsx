@@ -1,136 +1,8 @@
 import { useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
-
+import booksData from "../data/books.json";
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      title: "Atomic Habits",
-      author: "James Clear",
-      category: "Science Fiction",
-      price: 499,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81wgcld4wxL.jpg",
-    },
-    {
-      id: 2,
-      title: "The Alchemist",
-      author: "Paulo Coelho",
-      category: "Biography",
-      price: 399,
-      quantity: 2,
-      image: "https://m.media-amazon.com/images/I/71aFt4+OTOL.jpg",
-    },
-    {
-      id: 3,
-      title: "Pride and Prejudice",
-      author: "Jane Austen",
-      category: "Romance",
-      price: 350,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81OthjkJBuL.jpg",
-    },
-    {
-      id: 4,
-      title: "The Martian",
-      author: "Andy Weir",
-      category: "Science Fiction",
-      price: 450,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?fit=crop&w=500&q=80",
-    },
-    {
-      id: 5,
-      title: "The Lean Startup",
-      author: "Eric Ries",
-      category: "Business",
-      price: 520,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81-QB7nDh4L.jpg",
-    },
-    {
-      id: 6,
-      title: "Rich Dad Poor Dad",
-      author: "Robert Kiyosaki",
-      category: "Business",
-      price: 450,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
-    },
-    {
-      id: 7,
-      title: "Dune",
-      author: "Frank Herbert",
-      category: "Science Fiction",
-      price: 600,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/91QozB3P3BL.jpg",
-    },
-    {
-      id: 8,
-      title: "Charlotte's Web",
-      author: "E.B. White",
-      category: "Children",
-      price: 300,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81zv7Qh2CwL.jpg",
-    },
-    {
-      id: 9,
-      title: "The 7 Habits of Highly Effective People",
-      author: "Stephen R. Covey",
-      category: "Self Development",
-      price: 480,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/71AcjZ0uwFL.jpg",
-    },
-    {
-      id: 10,
-      title: "Gone Girl",
-      author: "Gillian Flynn",
-      category: "Mystery",
-      price: 400,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81af+MCATTL.jpg",
-    },
-    {
-      id: 11,
-      title: "Steve Jobs",
-      author: "Walter Isaacson",
-      category: "Biography",
-      price: 550,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/71a6vYTdEyL.jpg",
-    },
-    {
-      id: 12,
-      title: "The Cat in the Hat",
-      author: "Dr. Seuss",
-      category: "Children",
-      price: 250,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81ReeHk0xHL.jpg",
-    },
-    {
-      id: 13,
-      title: "The Girl with the Dragon Tattoo",
-      author: "Stieg Larsson",
-      category: "Mystery",
-      price: 420,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81Feyj3C0lL.jpg",
-    },
-    {
-      id: 14,
-      title: "Introduction to Algorithms",
-      author: "Thomas H. Cormen",
-      category: "Educational",
-      price: 899,
-      quantity: 1,
-      image: "https://m.media-amazon.com/images/I/81e-7hT8cdL.jpg",
-    },
-  ]);
+  const [cartItems, setCartItems] = useState(booksData);
 
   // Increase Quantity
   const increaseQty = (id) => {
@@ -169,7 +41,7 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-16 mt-20 ">
       {/* Header */}
-      <div className="mb-10 text-center">
+      <div className=" sticky top-16 z-50 bg-gray-50 py-6 mb-10 text-center shadow-sm">
         <h1 className="text-3xl lg:text-4xl font-bold text-pink-500 flex items-center justify-center gap-3">
           <ShoppingCart size={32} /> Your Shopping Cart
         </h1>
@@ -249,7 +121,7 @@ const Cart = () => {
           </div>
 
           {/* RIGHT SIDE - Order Summary */}
-          <div className="bg-white p-6 rounded-lg shadow-md h-fit">
+          <div className="bg-white p-6 rounded-lg shadow-md h-fit sticky top-45">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
               Order Summary
             </h2>
