@@ -88,7 +88,7 @@ function Freebook() {
       <div>
         <Slider {...settings} className="mt-6">
           {book.map((item) => (
-            <div key={item.id} className="px-2 md:px-3 lg:px-4">
+            <div key={item.id} className="px-2 md:px-3 lg:px-4 items-stretch">
               <Cards item={item} />
             </div>
           ))}

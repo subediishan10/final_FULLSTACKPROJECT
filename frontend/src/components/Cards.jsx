@@ -1,5 +1,25 @@
 import React from "react";
+import axios from "axios";
 function Cards({ item }) {
+  const handleAddToCart = async () => {
+    try {
+      await axios.post("http://localhost:4001/cart", {
+        id: item.id,
+        title: item.title,
+        author: item.author,
+        category: item.category,
+        price: item.price,
+        image: item.image,
+        quantity: 1,
+      });
+
+      alert("Book added to cart!");
+    } catch (error) {
+      console.log(error);
+      alert("Error adding to cart ");
+    }
+  };
+
   return (
     <>
       <div className="mt-4 my-3 p-3">
@@ -22,7 +42,10 @@ function Cards({ item }) {
             <p>{item.category}</p>
             <div className="card-actions flex  justify-between items-center ">
               <div className="badge badge-outline">${item.price}</div>
-              <div className="cursor-pointer px-2 py-1 border rounded-full hover:bg-pink-500 hover:text-white duration-200 ">
+              <div
+                onClick={handleAddToCart}
+                className="cursor-pointer px-2 py-1 border rounded-full hover:bg-pink-500 hover:text-white duration-200 "
+              >
                 Add to cart
               </div>
             </div>

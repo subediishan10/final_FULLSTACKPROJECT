@@ -5,6 +5,7 @@ import cors from "cors";
 
 import bookRoute from "./route/book.route.js";
 import userRoute from "./route/user.route.js";
+import cartRoute from "./route/cart.route.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 //Routes
 app.use("/book", bookRoute);
 app.use("/user", userRoute);
+app.use("/cart", cartRoute);
 
 //connect to MongoDB
 try {

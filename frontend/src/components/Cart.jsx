@@ -1,32 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import booksData from "../data/books.json";
+
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(booksData);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      const res = await axios.get("http://localhost:4001/cart");
+      setCartItems(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // Increase Quantity
-  const increaseQty = (id) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    );
+  const increaseQty = async (item) => {
+    try {
+      await axios.post("http://localhost:4001/cart/", {
+        ...item,
+        quantity: 1,
+      });
+
+      fetchCart();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // Decrease Quantity
-  const decreaseQty = (id) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item,
-      ),
-    );
+  const decreaseQty = async (item) => {
+    if (item.quantity <= 1) return;
+
+    try {
+      await axios.put("http://localhost:4001/cart/" + item._id, {
+        quantity: item.quantity - 1,
+      });
+
+      fetchCart();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // Remove Item
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const removeItem = async (id) => {
+    try {
+      await axios.delete("http://localhost:4001/cart/" + id);
+      fetchCart();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // Calculations
@@ -39,9 +67,9 @@ const Cart = () => {
   const total = subtotal + shipping + tax;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-16 mt-20 ">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-16 mt-20">
       {/* Header */}
-      <div className=" sticky top-16 z-50 bg-gray-50 py-6 mb-10 text-center shadow-sm">
+      <div className=" sticky  bg-gray-50 top-16 z-50  py-6 mb-10 text-center shadow-sm">
         <h1 className="text-3xl lg:text-4xl font-bold text-pink-500 flex items-center justify-center gap-3">
           <ShoppingCart size={32} /> Your Shopping Cart
         </h1>
@@ -90,7 +118,7 @@ const Cart = () => {
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-3 mt-4">
                     <button
-                      onClick={() => decreaseQty(item.id)}
+                      onClick={() => decreaseQty(item)}
                       className="p-2 bg-gray-200 rounded hover:bg-gray-300"
                     >
                       <Minus size={18} />
@@ -101,7 +129,7 @@ const Cart = () => {
                     </span>
 
                     <button
-                      onClick={() => increaseQty(item.id)}
+                      onClick={() => increaseQty(item)}
                       className="p-2 bg-gray-200 rounded hover:bg-gray-300"
                     >
                       <Plus size={18} />
@@ -111,7 +139,7 @@ const Cart = () => {
 
                 {/* Remove Button */}
                 <button
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => removeItem(item._id)}
                   className="text-red-500 hover:text-red-700 absolute top-2 right-2"
                 >
                   <Trash2 size={22} />
