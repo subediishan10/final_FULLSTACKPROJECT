@@ -1,31 +1,28 @@
 import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
-import booksData from "../data/books.json";
-
+import axios from "axios";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
 
   const fetchCart = async () => {
     try {
       const res = await axios.get("http://localhost:4001/cart");
+      console.log(res.data);
       setCartItems(res.data);
     } catch (err) {
       console.log(err);
     }
   };
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
   // Increase Quantity
   const increaseQty = async (item) => {
     try {
-      await axios.post("http://localhost:4001/cart/", {
-        ...item,
-        quantity: 1,
+      await axios.put(`http://localhost:4001/cart/${item.id}`, {
+        quantity: item.quantity + 1,
       });
-
       fetchCart();
     } catch (err) {
       console.log(err);
@@ -37,10 +34,9 @@ const Cart = () => {
     if (item.quantity <= 1) return;
 
     try {
-      await axios.put("http://localhost:4001/cart/" + item._id, {
+      await axios.put(`http://localhost:4001/cart/${item.id}`, {
         quantity: item.quantity - 1,
       });
-
       fetchCart();
     } catch (err) {
       console.log(err);
@@ -50,7 +46,7 @@ const Cart = () => {
   // Remove Item
   const removeItem = async (id) => {
     try {
-      await axios.delete("http://localhost:4001/cart/" + id);
+      await axios.delete(`http://localhost:4001/cart/${id}`);
       fetchCart();
     } catch (err) {
       console.log(err);
@@ -62,7 +58,7 @@ const Cart = () => {
     (total, item) => total + item.price * item.quantity,
     0,
   );
-  const shipping = 50;
+  const shipping = cartItems.length > 0 ? 50 : 0;
   const tax = subtotal * 0.05;
   const total = subtotal + shipping + tax;
 
@@ -98,7 +94,7 @@ const Cart = () => {
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="flex flex-col sm:flex-row items-center bg-white p-6 rounded-lg shadow-md gap-6 relative"
               >
                 <img
@@ -116,21 +112,18 @@ const Cart = () => {
                   <p className="text-pink-500 font-bold mt-2">₹{item.price}</p>
 
                   {/* Quantity Controls */}
-                  <div className="flex items-center gap-3 mt-4">
+                  <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => decreaseQty(item)}
-                      className="p-2 bg-gray-200 rounded hover:bg-gray-300"
+                      className="p-1 text-gray-600 rounded bg-gray-200   cursor-pointer "
                     >
                       <Minus size={18} />
                     </button>
-
-                    <span className="text-lg font-semibold">
-                      {item.quantity}
-                    </span>
+                    <span className=" text-gray-600 px-2">{item.quantity}</span>
 
                     <button
                       onClick={() => increaseQty(item)}
-                      className="p-2 bg-gray-200 rounded hover:bg-gray-300"
+                      className="p-1 text-gray-600 rounded bg-gray-200  cursor-pointer"
                     >
                       <Plus size={18} />
                     </button>

@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 function Cards({ item }) {
   const handleAddToCart = async () => {
     try {
@@ -12,11 +13,10 @@ function Cards({ item }) {
         image: item.image,
         quantity: 1,
       });
-
-      alert("Book added to cart!");
+      toast.success("Book added to cart");
     } catch (error) {
       console.log(error);
-      alert("Error adding to cart ");
+      toast.error("Error adding to cart ");
     }
   };
 
