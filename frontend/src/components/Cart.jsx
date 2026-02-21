@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import axios from "axios";
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
 
+  // Fetch cart items from backend
   const fetchCart = async () => {
     try {
       const res = await axios.get("http://localhost:4001/cart");
@@ -13,6 +15,7 @@ const Cart = () => {
       console.log(err);
     }
   };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -32,7 +35,6 @@ const Cart = () => {
   // Decrease Quantity
   const decreaseQty = async (item) => {
     if (item.quantity <= 1) return;
-
     try {
       await axios.put(`http://localhost:4001/cart/${item.id}`, {
         quantity: item.quantity - 1,
@@ -63,28 +65,31 @@ const Cart = () => {
   const total = subtotal + shipping + tax;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-16 mt-20">
+    <div className="min-h-screen bg-base-200 text-base-content py-10 px-4 md:px-16 mt-20 transition-colors duration-300">
       {/* Header */}
-      <div className=" sticky  bg-gray-50 top-16 z-50  py-6 mb-10 text-center shadow-sm">
+      <div className="sticky top-16 z-50 py-6 mb-10 text-center bg-base-200 shadow-md border-b border-base-300 transition">
         <h1 className="text-3xl lg:text-4xl font-bold text-pink-500 flex items-center justify-center gap-3">
           <ShoppingCart size={32} /> Your Shopping Cart
         </h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-base-content opacity-70 mt-2">
           Review your selected books before checkout
         </p>
       </div>
 
       {cartItems.length === 0 ? (
         // Empty Cart
-        <div className="text-center bg-white p-10 rounded-lg shadow-md">
-          <ShoppingCart size={60} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-700">
+        <div className="text-center bg-base-100 p-10 rounded-lg shadow-md border border-base-300 transition">
+          <ShoppingCart
+            size={60}
+            className="mx-auto text-base-content opacity-50 mb-4"
+          />
+          <h2 className="text-2xl font-semibold text-base-content">
             Your cart is empty
           </h2>
-          <p className="text-gray-500 mt-2">
+          <p className="opacity-70 mt-2">
             Looks like you haven’t added any books yet.
           </p>
-          <button className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+          <button className="mt-6 bg-primary hover:bg-primary-focus text-white px-6 py-2 rounded-md transition">
             Browse Books
           </button>
         </div>
@@ -95,7 +100,7 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div
                 key={item._id}
-                className="flex flex-col sm:flex-row items-center bg-white p-6 rounded-lg shadow-md gap-6 relative"
+                className="flex flex-col sm:flex-row items-center bg-base-100 p-6 rounded-lg shadow-md border border-base-300 gap-6 relative transition"
               >
                 <img
                   src={item.image}
@@ -104,26 +109,27 @@ const Cart = () => {
                 />
 
                 <div className="flex-1 w-full">
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h2 className="text-xl font-semibold text-base-content">
                     {item.title}
                   </h2>
-                  <p className="text-gray-500">{item.author}</p>
-                  <p className="text-gray-500">{item.category}</p>
+                  <p className="text-base-content opacity-70">{item.author}</p>
+                  <p className="text-base-content opacity-70">
+                    {item.category}
+                  </p>
                   <p className="text-pink-500 font-bold mt-2">₹{item.price}</p>
 
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => decreaseQty(item)}
-                      className="p-1 text-gray-600 rounded bg-gray-200   cursor-pointer "
+                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition"
                     >
                       <Minus size={18} />
                     </button>
-                    <span className=" text-gray-600 px-2">{item.quantity}</span>
-
+                    <span className="px-2">{item.quantity}</span>
                     <button
                       onClick={() => increaseQty(item)}
-                      className="p-1 text-gray-600 rounded bg-gray-200  cursor-pointer"
+                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition"
                     >
                       <Plus size={18} />
                     </button>
@@ -132,8 +138,8 @@ const Cart = () => {
 
                 {/* Remove Button */}
                 <button
-                  onClick={() => removeItem(item._id)}
-                  className="text-red-500 hover:text-red-700 absolute top-2 right-2"
+                  onClick={() => removeItem(item.id)}
+                  className="text-error hover:text-error-focus absolute top-2 right-2 transition"
                 >
                   <Trash2 size={22} />
                 </button>
@@ -142,42 +148,37 @@ const Cart = () => {
           </div>
 
           {/* RIGHT SIDE - Order Summary */}
-          <div className="bg-white p-6 rounded-lg shadow-md h-fit sticky top-45">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">
+          <div className="bg-base-100 p-6 rounded-lg shadow-md border border-base-300 h-fit sticky top-40 transition">
+            <h2 className="text-2xl font-bold mb-6 text-base-content">
               Order Summary
             </h2>
 
-            <div className="space-y-3 text-gray-600">
+            <div className="space-y-3 text-base-content opacity-70">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
-
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>₹{shipping}</span>
               </div>
-
               <div className="flex justify-between">
                 <span>Tax (5%)</span>
                 <span>₹{tax.toFixed(2)}</span>
               </div>
-
-              <hr />
-
-              <div className="flex justify-between text-lg font-bold text-gray-800">
+              <hr className="border-base-300" />
+              <div className="flex justify-between text-lg font-bold text-base-content opacity-90">
                 <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
             </div>
 
-            <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold cursor-pointer">
+            <button className="mt-6 w-full bg-primary hover:bg-primary-focus text-white py-3 rounded-md font-semibold transition">
               Proceed to Checkout
             </button>
-            <div className="flex text-sm text-gray-400 mt-3 text-center justify-center items-center gap-1">
-              <span>
-                <Lock size={15} />
-              </span>
+
+            <div className="flex text-sm text-base-content opacity-50 mt-3 justify-center items-center gap-1">
+              <Lock size={15} />
               <p>Secure Payment Guaranteed</p>
             </div>
           </div>

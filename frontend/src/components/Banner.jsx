@@ -23,7 +23,7 @@ function Banner() {
               Hello, welcomes here to learn something{" "}
               <span className="text-pink-500">new everyday!!!</span>
             </h1>
-            <p>
+            <p className="opacity-80">
               Emmet Abbreviation Lorem ipsum dolor sit amet consectetur
               adipisicing elit. Vel quo aliquid autem magni, eligendi placeat ex
               dolorum soluta mollitia impedit architecto voluptas provident

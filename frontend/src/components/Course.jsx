@@ -39,7 +39,7 @@ function Course() {
           We're delighted to have you{" "}
           <span className="text-pink-500">here!</span>
         </h1>
-        <p className="mt-10">
+        <p className="mt-10 opacity-80">
           Emmet Abbreviation Lorem ipsum dolor sit amet consectetur adipisicing
           elit. Vel quo aliquid autem magni, eligendi placeat ex dolorum soluta
           mollitia impedit architecto voluptas provident molestiae earum maiores
@@ -51,7 +51,7 @@ function Course() {
           </button>
         </Link>
       </div>
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-stretch">
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
         {book.map((item) => {
           return <Cards item={item} key={item.id} />;
         })}

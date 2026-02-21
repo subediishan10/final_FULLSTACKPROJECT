@@ -76,7 +76,7 @@ function Freebook() {
     <div className="max-w-screen-2xl container mx-auto md:px-20 px-4 mt-15 ">
       <div>
         <h1 className="font-semibold text-xl pb-2">Free Offered Courses </h1>
-        <p>
+        <p className="opacity-80">
           {" "}
           Emmet Abbreviation Lorem ipsum dolor sit amet consectetur adipisicing
           elit. Vel quo aliquid autem magni, eligendi placeat ex dolorum soluta
@@ -88,7 +88,7 @@ function Freebook() {
       <div>
         <Slider {...settings} className="mt-6">
           {book.map((item) => (
-            <div key={item.id} className="px-2 md:px-3 lg:px-4 items-stretch">
+            <div key={item.id} className="px-2 md:px-3 lg:px-4 ">
               <Cards item={item} />
             </div>
           ))}
