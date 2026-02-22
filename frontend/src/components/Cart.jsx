@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import axios from "axios";
+import CartSkeleton from "../skeleton/Cartskeleton";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch cart items from backend
   const fetchCart = async () => {
@@ -11,6 +13,7 @@ const Cart = () => {
       const res = await axios.get("http://localhost:4001/cart");
       console.log(res.data);
       setCartItems(res.data);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -20,6 +23,7 @@ const Cart = () => {
     fetchCart();
   }, []);
 
+  if (loading) return <CartSkeleton itemCount={3} />;
   // Increase Quantity
   const increaseQty = async (item) => {
     try {
@@ -65,9 +69,9 @@ const Cart = () => {
   const total = subtotal + shipping + tax;
 
   return (
-    <div className="min-h-screen bg-base-200 text-base-content py-10 px-4 md:px-16 mt-20 transition-colors duration-300">
+    <div className="min-h-screen  text-base-content py-10 px-4 md:px-16 mt-20 transition-colors duration-300">
       {/* Header */}
-      <div className="sticky top-16 z-50 py-6 mb-10 text-center bg-base-200 shadow-md border-b border-base-300 transition">
+      <div className="top-16  py-6 mb-10 text-center shadow-md  transition">
         <h1 className="text-3xl lg:text-4xl font-bold text-pink-500 flex items-center justify-center gap-3">
           <ShoppingCart size={32} /> Your Shopping Cart
         </h1>
@@ -122,14 +126,14 @@ const Cart = () => {
                   <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => decreaseQty(item)}
-                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition"
+                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition cursor-pointer"
                     >
                       <Minus size={18} />
                     </button>
                     <span className="px-2">{item.quantity}</span>
                     <button
                       onClick={() => increaseQty(item)}
-                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition"
+                      className="p-1 rounded bg-base-300 hover:bg-base-400 transition cursor-pointer"
                     >
                       <Plus size={18} />
                     </button>
@@ -139,7 +143,7 @@ const Cart = () => {
                 {/* Remove Button */}
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="text-error hover:text-error-focus absolute top-2 right-2 transition"
+                  className="text-error hover:text-error-focus absolute top-2 right-2 transition cursor-pointer"
                 >
                   <Trash2 size={22} />
                 </button>
@@ -173,7 +177,7 @@ const Cart = () => {
               </div>
             </div>
 
-            <button className="mt-6 w-full bg-primary hover:bg-primary-focus text-white py-3 rounded-md font-semibold transition">
+            <button className="mt-6 w-full bg-primary hover:bg-primary-focus text-white py-3 rounded-md font-semibold transition cursor-pointer">
               Proceed to Checkout
             </button>
 
