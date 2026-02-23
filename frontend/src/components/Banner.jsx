@@ -20,14 +20,14 @@ function Banner() {
         <div className="md:order-1 order-2 w-full md:w-1/2 mt-12 md:mt-32">
           <div className="space-y-12">
             <h1 className="text-4xl font-bold">
-              Hello, welcomes here to learn something{" "}
-              <span className="text-pink-500">new everyday!!!</span>
+              Discover{" "}
+              <span className="text-pink-500">Your Next Favorite Book</span>
             </h1>
             <p className="opacity-80">
-              Emmet Abbreviation Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Vel quo aliquid autem magni, eligendi placeat ex
-              dolorum soluta mollitia impedit architecto voluptas provident
-              molestiae earum maiores illum eius delectus sapiente.
+              Welcome to BookWebStore — your trusted online bookstore. Browse
+              thousands of books across genres, from fiction and romance to
+              self-development and educational. Find the perfect book and enjoy
+              reading from the comfort of your home.
             </p>
 
             <label className="input validator">
@@ -47,10 +47,14 @@ function Banner() {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </g>
               </svg>
-              <input type="email" placeholder="Email" required />
+              <input
+                type="email"
+                placeholder="Enter your email to subscribe"
+                required
+              />
             </label>
           </div>
-          <button className="btn btn-secondary mt-4">Secondary</button>
+          <button className="btn btn-secondary mt-4">Subscribe Now</button>
         </div>
         <div className="w-full order-1 md:w-1/2 flex items-center justify-center">
           <img src={banner} className="md:w-92 md:h-92 " alt="" />

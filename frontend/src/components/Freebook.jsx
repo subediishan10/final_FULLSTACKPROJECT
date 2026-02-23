@@ -75,13 +75,18 @@ function Freebook() {
   return (
     <div className="max-w-screen-2xl container mx-auto md:px-20 px-4 mt-15 ">
       <div>
-        <h1 className="font-semibold text-xl pb-2">Free Offered Courses </h1>
+        <h1 className="font-semibold text-xl pb-2">
+          Free Offered Books for you{" "}
+        </h1>
         <p className="opacity-80">
-          {" "}
-          Emmet Abbreviation Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Vel quo aliquid autem magni, eligendi placeat ex dolorum soluta
-          mollitia impedit architecto voluptas provident molestiae earum maiores
-          illum eius delectus sapiente.
+          Discover a carefully curated collection of{" "}
+          <span className="text-pink-500">free books</span> across multiple
+          genres, including science fiction, fantasy, romance, and
+          self-development. Dive into exciting stories that entertain and
+          educate, helping you explore new ideas and perspectives. Whether
+          you’re a passionate reader, a student, or just curious to learn,
+          there’s something here for everyone. Start browsing today and uncover
+          hidden gems that inspire, inform, and delight.
         </p>
       </div>
 

@@ -40,11 +40,14 @@ function Course() {
           <span className="text-pink-500">here!</span>
         </h1>
         <p className="mt-10 opacity-80">
-          Emmet Abbreviation Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Vel quo aliquid autem magni, eligendi placeat ex dolorum soluta
-          mollitia impedit architecto voluptas provident molestiae earum maiores
-          illum eius delectus sapiente.
+          Welcome to our curated collection of books, carefully selected to
+          inspire learning and spark curiosity. Explore a wide range of titles
+          across genres like fiction, self-development, business, and more.
+          Whether you are seeking knowledge, entertainment, or personal growth,
+          you will find something to captivate your mind. Dive in and discover
+          books that educate, entertain, and transform your reading experience.
         </p>
+
         <Link to="/">
           <button className=" cursor-pointer bg-pink-500 mt-6 text-white px-4 py-2 rounded-md hover:bg-pink-700 duration-300">
             Back
