@@ -64,7 +64,7 @@ function Categories() {
             {categories.map((category, index) => (
               <div
                 key={index}
-                className="shadow-md rounded-lg p-6 flex flex-col items-center justify-center hover:scale-105 transform transition duration-300 border border-base-content/15"
+                className="shadow-md rounded-lg p-6 flex flex-col items-center justify-center hover:scale-105 transform transition duration-300 border border-base-content/15 cursor-pointer"
               >
                 <div className="mb-3">{category.icon}</div>
                 <h2 className="text-xl font-semibold">{category.name}</h2>
