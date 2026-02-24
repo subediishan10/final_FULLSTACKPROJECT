@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CategoriesLoading from "../skeleton/CategorySkeleton"; // import skeleton
+import { useNavigate } from "react-router-dom";
 import {
   Baby,
   BookOpen,
@@ -16,6 +17,7 @@ function Categories() {
   const [size] = useState(30);
   const [loading, setLoading] = useState(true);
   const colorIcon = "text-pink-500";
+  const navigate = useNavigate();
 
   const categories = [
     { name: "Fiction", icon: <BookOpen size={size} className={colorIcon} /> },
@@ -65,6 +67,9 @@ function Categories() {
               <div
                 key={index}
                 className="shadow-md rounded-lg p-6 flex flex-col items-center justify-center hover:scale-105 transform transition duration-300 border border-base-content/15 cursor-pointer"
+                onClick={() =>
+                  navigate(`/categories/${category.name.toLowerCase()}`)
+                }
               >
                 <div className="mb-3">{category.icon}</div>
                 <h2 className="text-xl font-semibold">{category.name}</h2>

@@ -10,6 +10,7 @@ import { useAuth } from "./context/AuthProvider";
 import Abouts from "./abouts/Abouts";
 import Categories from "./categories/Categories";
 import Carts from "./carts/carts";
+import CategoryBooks from "./components/CategoryBooks";
 function App() {
   const [authUser, setAuthUser] = useAuth();
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/contact" element={<Contacts />} />
         <Route path="/about" element={<Abouts />} />
         <Route path="/categories" element={<Categories />} />
+        <Route path="/categories/:categoryName" element={<CategoryBooks />} />
         <Route path="/cart" element={<Carts />} />
       </Routes>
       <Toaster />
