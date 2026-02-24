@@ -13,7 +13,7 @@ import {
   Search,
 } from "lucide-react";
 
-function Categories() {
+function Category() {
   const [size] = useState(30);
   const [loading, setLoading] = useState(true);
   const colorIcon = "text-pink-500";
@@ -82,4 +82,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default Category;

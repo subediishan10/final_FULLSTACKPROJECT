@@ -11,6 +11,7 @@ import Abouts from "./abouts/Abouts";
 import Categories from "./categories/Categories";
 import Carts from "./carts/carts";
 import CategoryBooks from "./components/CategoryBooks";
+import BookDetails from "./details/BookDetails";
 function App() {
   const [authUser, setAuthUser] = useAuth();
   return (
@@ -27,7 +28,9 @@ function App() {
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:categoryName" element={<CategoryBooks />} />
         <Route path="/cart" element={<Carts />} />
+        <Route path="/bookdetails/:id" element={<BookDetails />} />
       </Routes>
+
       <Toaster />
     </>
   );
