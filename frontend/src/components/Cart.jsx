@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import axios from "axios";
 import CartSkeleton from "../skeleton/Cartskeleton";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -142,8 +143,46 @@ const Cart = () => {
 
                 {/* Remove Button */}
                 <button
-                  onClick={() => removeItem(item.id)}
-                  className="text-error hover:text-error-focus absolute top-2 right-2 transition cursor-pointer"
+                  onClick={() =>
+                    toast(
+                      (t) => (
+                        <div className="p-4 w-72 rounded-xl">
+                          <h3 className="text-lg font-semibold text-red-500 mb-2">
+                            Delete Item
+                          </h3>
+
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                            Are you sure you want to delete this item?
+                          </p>
+
+                          <div className="flex justify-end gap-3">
+                            <button
+                              onClick={() => toast.dismiss(t.id)}
+                              className="px-3 py-1 cursor-pointer rounded-md bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                            >
+                              Cancel
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                removeItem(item.id);
+                                toast.dismiss(t.id);
+                              }}
+                              className="px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-700 transition cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ),
+                      {
+                        id: "delete-confirm",
+                        duration: Infinity,
+                        position: "top-center",
+                      },
+                    )
+                  }
+                  className="text-red-500 hover:text-red-700 absolute top-2 right-2 transition cursor-pointer"
                 >
                   <Trash2 size={22} />
                 </button>
