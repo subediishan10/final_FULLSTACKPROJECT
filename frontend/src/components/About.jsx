@@ -1,23 +1,39 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import AboutSkeleton from "../skeleton/AboutSkeleton";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
 const About = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500); // simulate API/load delay
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="min-h-screen  text-base-content px-6 md:px-20 py-16 mt-10">
+    <div className="min-h-screen text-base-content px-6 md:px-20 py-16 mt-10">
       {loading ? (
         <AboutSkeleton />
       ) : (
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-16">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="text-center mb-16"
+          >
             <h1 className="text-3xl md:text-4xl font-bold text-pink-500 mb-6">
               About Our Online Book Store
             </h1>
@@ -26,87 +42,140 @@ const About = () => {
               discovering, exploring, and purchasing books online. We bring
               stories, knowledge, and inspiration right to your fingertips.
             </p>
-          </div>
+          </motion.div>
 
           {/* Who We Are */}
-          <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid md:grid-cols-2 gap-12 items-center mb-20"
+          >
             <div>
-              <h2 className="text-2xl  md:text-3xl font-semibold text-pink-400 mb-6">
+              <h2 className="text-2xl md:text-3xl font-semibold text-pink-400 mb-6">
                 Who We Are?
               </h2>
               <p className="opacity-80 leading-relaxed mb-6">
-                BookWebStore is an online platform dedicated to book lovers. Our
-                goal is to make reading accessible and convenient by providing a
-                wide collection of books across various genres including
-                fiction, non-fiction, academic, technology, and
-                self-development.
+                BookWebStore is an online platform dedicated to book lovers...
               </p>
               <p className="opacity-80 leading-relaxed">
-                Whether you are a student, professional, or passionate reader,
-                our platform helps you find the perfect book easily and quickly.
+                Whether you are a student, professional, or passionate reader...
               </p>
             </div>
 
-            <div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
               <img
                 src="https://images.unsplash.com/photo-1512820790803-83ca734da794"
                 alt="Books Collection"
-                className="rounded-2xl shadow-xl hover:scale-105 duration-300"
+                className="rounded-2xl shadow-xl"
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* What We Offer */}
-          <div className="mb-20">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mb-20"
+          >
             <h2 className="text-2xl md:text-3xl font-semibold text-center text-pink-400 mb-12">
               What We Offer
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-base-100 p-6 rounded-2xl shadow-md hover:shadow-xl duration-300">
-                <h3 className="text-xl font-semibold mb-3">Wide Collection</h3>
-                <p className="opacity-70">
-                  Explore a diverse range of books across multiple categories.
-                </p>
-              </div>
-
-              <div className="bg-base-100 p-6 rounded-2xl shadow-md hover:shadow-xl duration-300">
-                <h3 className="text-xl font-semibold mb-3">Easy Ordering</h3>
-                <p className="opacity-70">
-                  Simple add-to-cart system with smooth checkout experience.
-                </p>
-              </div>
-
-              <div className="bg-base-100 p-6 rounded-2xl shadow-md hover:shadow-xl duration-300">
-                <h3 className="text-xl font-semibold mb-3">Secure Platform</h3>
-                <p className="opacity-70">
-                  Safe and reliable system designed for user satisfaction.
-                </p>
-              </div>
+              {["Wide Collection", "Easy Ordering", "Secure Platform"].map(
+                (title, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.2 }}
+                    viewport={{ once: true }}
+                    className="bg-base-100 p-6 rounded-2xl shadow-md hover:shadow-xl duration-300"
+                  >
+                    <h3 className="text-xl font-semibold mb-3">{title}</h3>
+                    <p className="opacity-70">
+                      {title === "Wide Collection" &&
+                        "Explore a diverse range of books across multiple categories."}
+                      {title === "Easy Ordering" &&
+                        "Simple add-to-cart system with smooth checkout experience."}
+                      {title === "Secure Platform" &&
+                        "Safe and reliable system designed for user satisfaction."}
+                    </p>
+                  </motion.div>
+                ),
+              )}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Core Values */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mb-20 text-center"
+          >
+            <h2 className="text-2xl md:text-3xl font-semibold text-pink-400 mb-10">
+              Our Core Values
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto text-left">
+              {[
+                "📚 Passion for Reading",
+                "🤝 Customer First Approach",
+                "🔒 Trust & Transparency",
+                "🚀 Continuous Innovation",
+                "🌍 Community Growth",
+              ].map((value, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <h3 className="text-xl font-semibold mb-3">{value}</h3>
+                  <p className="opacity-80 leading-relaxed">
+                    We are committed to excellence and continuous improvement in
+                    everything we do, ensuring value and growth for our readers
+                    and community.
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
           {/* Mission & Vision */}
-          <div className="text-center">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-center"
+          >
             <h2 className="text-2xl md:text-3xl font-semibold text-pink-400 mb-5">
               Our Mission
             </h2>
             <p className="max-w-4xl mx-auto opacity-80 leading-relaxed text-lg mb-20">
               Our mission is to promote reading culture by making books easily
-              accessible through a modern digital platform. We aim to connect
-              readers with stories and knowledge that inspire growth and
-              creativity.
+              accessible through a modern digital platform.
             </p>
 
             <h2 className="text-2xl md:text-3xl font-semibold text-pink-400 mb-5">
               Our Vision
             </h2>
             <p className="max-w-4xl mx-auto opacity-80 leading-relaxed text-lg">
-              We envision becoming a reliable and user-friendly online bookstore
-              where readers can explore, purchase, and enjoy books effortlessly
-              from anywhere.
+              We envision becoming a reliable and user-friendly online
+              bookstore.
             </p>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
