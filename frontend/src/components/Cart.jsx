@@ -244,7 +244,6 @@
 // };
 
 // export default Cart;
-
 import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import axios from "axios";
@@ -263,6 +262,24 @@ const Cart = () => {
 
   const FREE_SHIPPING_THRESHOLD = 1000;
 
+  // ================= AVAILABLE COUPONS =================
+  const AVAILABLE_COUPONS = [
+    {
+      code: "BOOK10",
+      type: "percentage",
+      value: 10,
+      minCart: 500,
+      expires: "2026-12-31",
+    },
+    {
+      code: "FLAT100",
+      type: "flat",
+      value: 100,
+      minCart: 1000,
+      expires: "2026-12-31",
+    },
+  ];
+
   // ================= FETCH CART =================
   const fetchCart = async () => {
     try {
@@ -271,6 +288,7 @@ const Cart = () => {
       setLoading(false);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -315,18 +333,62 @@ const Cart = () => {
     0,
   );
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 50;
+  const shipping =
+    subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : subtotal > 0 ? 50 : 0;
   const tax = subtotal * 0.05;
   const total = subtotal + shipping + tax - discount;
 
-  // ================= COUPON =================
+  // ================= APPLY COUPON =================
   const applyCoupon = () => {
-    if (coupon === "BOOK10") {
-      setDiscount(subtotal * 0.1);
-      toast.success("Coupon Applied 🎉");
-    } else {
-      toast.error("Invalid Coupon");
+    if (!coupon.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
     }
+
+    const enteredCode = coupon.trim().toUpperCase();
+
+    const foundCoupon = AVAILABLE_COUPONS.find((c) => c.code === enteredCode);
+
+    if (!foundCoupon) {
+      toast.error("Invalid Coupon Code");
+      return;
+    }
+
+    const today = new Date();
+    const expiryDate = new Date(foundCoupon.expires);
+
+    if (today > expiryDate) {
+      toast.error("Coupon Expired");
+      return;
+    }
+
+    if (subtotal < foundCoupon.minCart) {
+      toast.error(`Minimum cart value ₹${foundCoupon.minCart} required`);
+      return;
+    }
+
+    if (discount > 0) {
+      toast.error("Coupon already applied");
+      return;
+    }
+
+    let calculatedDiscount = 0;
+
+    if (foundCoupon.type === "percentage") {
+      calculatedDiscount = (subtotal * foundCoupon.value) / 100;
+    } else if (foundCoupon.type === "flat") {
+      calculatedDiscount = foundCoupon.value;
+    }
+
+    setDiscount(calculatedDiscount);
+    toast.success(`Coupon Applied 🎉 You saved ₹${calculatedDiscount}`);
+  };
+
+  // ================= REMOVE COUPON =================
+  const removeCoupon = () => {
+    setDiscount(0);
+    setCoupon("");
+    toast.success("Coupon Removed");
   };
 
   // ================= CHECKOUT =================
@@ -380,7 +442,7 @@ const Cart = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ================= LEFT SIDE ================= */}
+          {/* LEFT SIDE */}
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item) => (
               <div
@@ -397,9 +459,7 @@ const Cart = () => {
                   <h2 className="text-xl font-semibold">{item.title}</h2>
                   <p className="opacity-70">{item.author}</p>
                   <p className="text-green-500 text-sm mt-1">In Stock</p>
-
                   <p className="text-pink-500 font-bold mt-2">₹{item.price}</p>
-
                   <p className="text-sm mt-1 font-medium">
                     Item Total: ₹{(item.price * item.quantity).toFixed(2)}
                   </p>
@@ -441,7 +501,7 @@ const Cart = () => {
             </button>
           </div>
 
-          {/* ================= RIGHT SIDE ================= */}
+          {/* RIGHT SIDE */}
           <div className="bg-base-100 p-6 rounded-lg shadow-md border border-base-300 h-fit sticky top-40">
             <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
@@ -468,11 +528,6 @@ const Cart = () => {
                 </div>
               )}
 
-              <div className="flex justify-between text-sm">
-                <span>Estimated Delivery</span>
-                <span>3-5 Business Days</span>
-              </div>
-
               <hr />
 
               <div className="flex justify-between text-lg font-bold">
@@ -481,7 +536,7 @@ const Cart = () => {
               </div>
             </div>
 
-            {/* ================= COUPON ================= */}
+            {/* COUPON */}
             <div className="mt-6">
               <input
                 type="text"
@@ -490,15 +545,30 @@ const Cart = () => {
                 placeholder="Enter Coupon Code"
                 className="w-full px-3 py-2 rounded-md border border-base-300 bg-base-200"
               />
-              <button
-                onClick={applyCoupon}
-                className="mt-2 w-full bg-pink-500 text-white py-2 rounded-md"
-              >
-                Apply Coupon
-              </button>
+
+              {discount > 0 ? (
+                <button
+                  onClick={removeCoupon}
+                  className="mt-2 w-full bg-red-500 text-white py-2 rounded-md"
+                >
+                  Remove Coupon
+                </button>
+              ) : (
+                <button
+                  onClick={applyCoupon}
+                  className="mt-2 w-full bg-pink-500 text-white py-2 rounded-md hover:bg-pink-600 transition"
+                >
+                  Apply Coupon
+                </button>
+              )}
+
+              <p className="text-xs opacity-60 mt-2">
+                Try: BOOK10 (10% off above ₹500) or FLAT100 (₹100 off above
+                ₹1000)
+              </p>
             </div>
 
-            {/* ================= CHECKOUT ================= */}
+            {/* CHECKOUT */}
             <button
               onClick={handleCheckout}
               className="mt-6 w-full bg-primary hover:bg-primary-focus text-white py-3 rounded-md font-semibold"
