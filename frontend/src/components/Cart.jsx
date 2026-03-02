@@ -243,13 +243,13 @@
 //   );
 // };
 
-// export default Cart;
-import { useEffect, useState } from "react";
+// export default Cart;import { useEffect, useState } from "react";
 import { Trash2, Plus, Minus, ShoppingCart, Lock } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import CartSkeleton from "../skeleton/Cartskeleton";
+import { useState, useEffect } from "react";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -259,6 +259,8 @@ const Cart = () => {
   const [show, setShow] = useState(false);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [updatingItemId, setUpdatingItemId] = useState(null);
 
   const FREE_SHIPPING_THRESHOLD = 1000;
 
@@ -285,9 +287,9 @@ const Cart = () => {
     try {
       const res = await axios.get("http://localhost:4001/cart");
       setCartItems(res.data);
-      setLoading(false);
     } catch (err) {
-      console.log(err);
+      toast.error("Failed to load cart");
+    } finally {
       setLoading(false);
     }
   };
@@ -297,36 +299,6 @@ const Cart = () => {
     setTimeout(() => setShow(true), 200);
   }, []);
 
-  if (loading) return <CartSkeleton itemCount={3} />;
-
-  // ================= QUANTITY =================
-  const increaseQty = async (item) => {
-    await axios.put(`http://localhost:4001/cart/${item.id}`, {
-      quantity: item.quantity + 1,
-    });
-    fetchCart();
-  };
-
-  const decreaseQty = async (item) => {
-    if (item.quantity <= 1) return;
-    await axios.put(`http://localhost:4001/cart/${item.id}`, {
-      quantity: item.quantity - 1,
-    });
-    fetchCart();
-  };
-
-  const removeItem = async (id) => {
-    await axios.delete(`http://localhost:4001/cart/${id}`);
-    toast.success("Item removed");
-    fetchCart();
-  };
-
-  const clearCart = async () => {
-    await axios.delete("http://localhost:4001/cart");
-    toast.success("Cart cleared");
-    fetchCart();
-  };
-
   // ================= CALCULATIONS =================
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -335,18 +307,90 @@ const Cart = () => {
 
   const shipping =
     subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : subtotal > 0 ? 50 : 0;
+
   const tax = subtotal * 0.05;
-  const total = subtotal + shipping + tax - discount;
+  const total = Math.max(subtotal + shipping + tax - discount, 0);
+
+  // ================= AUTO REMOVE COUPON IF INVALID =================
+  useEffect(() => {
+    if (discount > 0) {
+      const currentCoupon = AVAILABLE_COUPONS.find(
+        (c) => c.code === coupon.toUpperCase(),
+      );
+
+      if (currentCoupon && subtotal < currentCoupon.minCart) {
+        setDiscount(0);
+        setCoupon("");
+        toast.error("Coupon removed (cart value changed)");
+      }
+    }
+  }, [subtotal]);
+
+  // ================= QUANTITY =================
+  const increaseQty = async (item) => {
+    try {
+      setUpdatingItemId(item.id);
+      await axios.put(`http://localhost:4001/cart/${item.id}`, {
+        quantity: item.quantity + 1,
+      });
+      fetchCart();
+    } catch {
+      toast.error("Failed to update quantity");
+    } finally {
+      setUpdatingItemId(null);
+    }
+  };
+
+  const decreaseQty = async (item) => {
+    if (item.quantity <= 1) return;
+
+    try {
+      setUpdatingItemId(item.id);
+      await axios.put(`http://localhost:4001/cart/${item.id}`, {
+        quantity: item.quantity - 1,
+      });
+      fetchCart();
+    } catch {
+      toast.error("Failed to update quantity");
+    } finally {
+      setUpdatingItemId(null);
+    }
+  };
+
+  const removeItem = async (id) => {
+    if (!window.confirm("Remove this item?")) return;
+
+    try {
+      await axios.delete(`http://localhost:4001/cart/${id}`);
+      toast.success("Item removed");
+      fetchCart();
+    } catch {
+      toast.error("Failed to remove item");
+    }
+  };
+
+  const clearCart = async () => {
+    if (!window.confirm("Clear entire cart?")) return;
+
+    try {
+      await axios.delete("http://localhost:4001/cart");
+      toast.success("Cart cleared");
+      setDiscount(0);
+      setCoupon("");
+      fetchCart();
+    } catch {
+      toast.error("Failed to clear cart");
+    }
+  };
 
   // ================= APPLY COUPON =================
   const applyCoupon = () => {
     if (!coupon.trim()) {
-      toast.error("Please enter a coupon code");
+      toast.error("Enter coupon code");
       return;
     }
 
     const enteredCode = coupon.trim().toUpperCase();
-
     const foundCoupon = AVAILABLE_COUPONS.find((c) => c.code === enteredCode);
 
     if (!foundCoupon) {
@@ -354,10 +398,7 @@ const Cart = () => {
       return;
     }
 
-    const today = new Date();
-    const expiryDate = new Date(foundCoupon.expires);
-
-    if (today > expiryDate) {
+    if (new Date() > new Date(foundCoupon.expires)) {
       toast.error("Coupon Expired");
       return;
     }
@@ -376,15 +417,14 @@ const Cart = () => {
 
     if (foundCoupon.type === "percentage") {
       calculatedDiscount = (subtotal * foundCoupon.value) / 100;
-    } else if (foundCoupon.type === "flat") {
+    } else {
       calculatedDiscount = foundCoupon.value;
     }
 
     setDiscount(calculatedDiscount);
-    toast.success(`Coupon Applied 🎉 You saved ₹${calculatedDiscount}`);
+    toast.success(`Coupon Applied 🎉 Saved ₹${calculatedDiscount}`);
   };
 
-  // ================= REMOVE COUPON =================
   const removeCoupon = () => {
     setDiscount(0);
     setCoupon("");
@@ -392,62 +432,76 @@ const Cart = () => {
   };
 
   // ================= CHECKOUT =================
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       toast.error("Cart is empty");
       return;
     }
-    navigate("/checkout");
+
+    try {
+      setCheckoutLoading(true);
+
+      const orderData = {
+        items: cartItems,
+        subtotal,
+        shipping,
+        tax,
+        discount,
+        total,
+        coupon: discount > 0 ? coupon.toUpperCase() : null,
+        paymentMethod: "COD",
+        status: "Pending",
+      };
+
+      await axios.post("http://localhost:4001/orders", orderData);
+
+      toast.success("Order placed successfully 🎉");
+
+      await axios.delete("http://localhost:4001/cart");
+
+      navigate("/order-success");
+    } catch {
+      toast.error("Checkout failed");
+    } finally {
+      setCheckoutLoading(false);
+    }
   };
+
+  if (loading) return <CartSkeleton itemCount={3} />;
 
   return (
     <div
-      className={`min-h-screen text-base-content py-10 px-4 md:px-16 mt-20 transition-all duration-700 ${
+      className={`min-h-screen py-10 px-4 md:px-16 mt-20 transition-all duration-700 ${
         show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
     >
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="py-6 mb-10 text-center shadow-md rounded-lg">
         <h1 className="text-3xl lg:text-4xl font-bold text-pink-500 flex items-center justify-center gap-3">
           <ShoppingCart size={32} />
           Your Shopping Cart ({cartItems.length} items)
         </h1>
-
-        {subtotal < FREE_SHIPPING_THRESHOLD && subtotal > 0 && (
-          <p className="mt-3 text-sm text-pink-500">
-            Add ₹{FREE_SHIPPING_THRESHOLD - subtotal} more for FREE shipping 🚚
-          </p>
-        )}
-
-        {subtotal >= FREE_SHIPPING_THRESHOLD && (
-          <p className="mt-3 text-sm text-green-500">
-            🎉 You unlocked FREE Shipping!
-          </p>
-        )}
       </div>
 
       {cartItems.length === 0 ? (
-        <div className="text-center bg-base-100 p-10 rounded-lg shadow-md border border-base-300">
+        <div className="text-center bg-base-100 p-10 rounded-lg shadow-md">
           <ShoppingCart size={60} className="mx-auto opacity-50 mb-4" />
           <h2 className="text-2xl font-semibold">Your cart is empty</h2>
-          <p className="opacity-70 mt-2">
-            Looks like you haven’t added any books yet.
-          </p>
           <Link
             to="/courses"
-            className="mt-6 inline-block bg-primary hover:bg-primary-focus text-white px-6 py-2 rounded-md transition"
+            className="mt-6 inline-block bg-primary text-white px-6 py-2 rounded-md"
           >
             Browse Books
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* LEFT SIDE */}
+          {/* LEFT */}
           <div className="lg:col-span-2 space-y-6">
             {cartItems.map((item) => (
               <div
                 key={item._id}
-                className="flex flex-col sm:flex-row items-center bg-base-100 p-6 rounded-lg shadow-md border border-base-300 gap-6"
+                className="flex flex-col sm:flex-row items-center bg-base-100 p-6 rounded-lg shadow-md gap-6"
               >
                 <img
                   src={item.image}
@@ -455,29 +509,26 @@ const Cart = () => {
                   className="w-28 h-36 object-cover rounded-md"
                 />
 
-                <div className="flex-1 w-full">
+                <div className="flex-1">
                   <h2 className="text-xl font-semibold">{item.title}</h2>
                   <p className="opacity-70">{item.author}</p>
-                  <p className="text-green-500 text-sm mt-1">In Stock</p>
                   <p className="text-pink-500 font-bold mt-2">₹{item.price}</p>
-                  <p className="text-sm mt-1 font-medium">
-                    Item Total: ₹{(item.price * item.quantity).toFixed(2)}
-                  </p>
 
                   <div className="flex items-center gap-2 mt-4">
                     <button
                       onClick={() => decreaseQty(item)}
-                      disabled={item.quantity <= 1}
-                      className="p-1 rounded bg-base-300 hover:bg-base-400 disabled:opacity-40"
+                      disabled={updatingItemId === item.id}
+                      className="p-1 bg-base-300 rounded"
                     >
                       <Minus size={18} />
                     </button>
 
-                    <span className="px-2">{item.quantity}</span>
+                    <span>{item.quantity}</span>
 
                     <button
                       onClick={() => increaseQty(item)}
-                      className="p-1 rounded bg-base-300 hover:bg-base-400"
+                      disabled={updatingItemId === item.id}
+                      className="p-1 bg-base-300 rounded"
                     >
                       <Plus size={18} />
                     </button>
@@ -486,7 +537,7 @@ const Cart = () => {
 
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500"
                 >
                   <Trash2 size={22} />
                 </button>
@@ -501,11 +552,11 @@ const Cart = () => {
             </button>
           </div>
 
-          {/* RIGHT SIDE */}
-          <div className="bg-base-100 p-6 rounded-lg shadow-md border border-base-300 h-fit sticky top-40">
+          {/* RIGHT */}
+          <div className="bg-base-100 p-6 rounded-lg shadow-md h-fit sticky top-40">
             <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
-            <div className="space-y-3 opacity-80">
+            <div className="space-y-3">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
@@ -517,7 +568,7 @@ const Cart = () => {
               </div>
 
               <div className="flex justify-between">
-                <span>Tax (5%)</span>
+                <span>Tax</span>
                 <span>₹{tax.toFixed(2)}</span>
               </div>
 
@@ -534,6 +585,12 @@ const Cart = () => {
                 <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
+
+              {discount > 0 && (
+                <p className="text-sm text-green-500">
+                  🎉 You saved ₹{discount.toFixed(2)}
+                </p>
+              )}
             </div>
 
             {/* COUPON */}
@@ -543,7 +600,7 @@ const Cart = () => {
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
                 placeholder="Enter Coupon Code"
-                className="w-full px-3 py-2 rounded-md border border-base-300 bg-base-200"
+                className="w-full px-3 py-2 rounded-md border bg-base-200"
               />
 
               {discount > 0 ? (
@@ -556,36 +613,25 @@ const Cart = () => {
               ) : (
                 <button
                   onClick={applyCoupon}
-                  className="mt-2 w-full bg-pink-500 text-white py-2 rounded-md hover:bg-pink-600 transition"
+                  className="mt-2 w-full bg-pink-500 text-white py-2 rounded-md"
                 >
                   Apply Coupon
                 </button>
               )}
-
-              <p className="text-xs opacity-60 mt-2">
-                Try: BOOK10 (10% off above ₹500) or FLAT100 (₹100 off above
-                ₹1000)
-              </p>
             </div>
 
             {/* CHECKOUT */}
             <button
               onClick={handleCheckout}
-              className="mt-6 w-full bg-primary hover:bg-primary-focus text-white py-3 rounded-md font-semibold"
+              disabled={checkoutLoading}
+              className="mt-6 w-full bg-primary text-white py-3 rounded-md disabled:opacity-60"
             >
-              Proceed to Checkout
+              {checkoutLoading ? "Processing..." : "Proceed to Checkout"}
             </button>
-
-            <Link
-              to="/courses"
-              className="block text-center mt-3 text-primary hover:underline"
-            >
-              Continue Shopping
-            </Link>
 
             <div className="flex text-xs opacity-60 mt-4 justify-center items-center gap-1">
               <Lock size={15} />
-              <p>100% Secure Payments | Easy Returns</p>
+              <p>100% Secure Payments</p>
             </div>
           </div>
         </div>
