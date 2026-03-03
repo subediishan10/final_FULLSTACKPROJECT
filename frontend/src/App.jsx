@@ -12,6 +12,9 @@ import Categories from "./categories/Categories";
 import Carts from "./carts/carts";
 import CategoryBooks from "./components/CategoryBooks";
 import BookDetails from "./details/BookDetails";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsConditions from "./components/TermsConditions";
+import FAQ from "./components/FAQ";
 function App() {
   const [authUser, setAuthUser] = useAuth();
   return (
@@ -29,6 +32,9 @@ function App() {
         <Route path="/categories/:categoryName" element={<CategoryBooks />} />
         <Route path="/cart" element={<Carts />} />
         <Route path="/bookdetails/:id" element={<BookDetails />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
+        <Route path="/faq" element={<FAQ />} />
       </Routes>
 
       <Toaster />
