@@ -66,13 +66,22 @@ function Course() {
           <span className="text-pink-500">here!</span>
         </h1>
 
-        <p className="mt-10 opacity-80">
-          Welcome to our curated collection of books, carefully selected to
-          inspire learning and spark curiosity. Explore a wide range of titles
-          across genres like fiction, self-development, business, and more.
-          Whether you are seeking knowledge, entertainment, or personal growth,
-          you will find something to captivate your mind. Dive in and discover
-          books that educate, entertain, and transform your reading experience.
+        <p className="mt-10 opacity-80 leading-relaxed text-lg">
+          Welcome to a smarter way of learning and growing. Our platform is
+          built for curious minds who believe knowledge is the ultimate
+          superpower. We combine thoughtfully curated content with a seamless
+          browsing experience to help you discover books that truly matter.
+          <br />
+          <br />
+          From breakthrough business strategies to powerful self-development
+          insights, from immersive fiction to practical skill-building guides —
+          every title is selected to deliver real value. We believe learning
+          should be inspiring, accessible, and transformative.
+          <br />
+          <br />
+          Whether you're building your career, launching your startup, mastering
+          new skills, or simply exploring new ideas, this is your space to grow.
+          Start exploring, keep learning, and stay ahead.
         </p>
 
         <Link to="/">
